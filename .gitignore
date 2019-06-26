@@ -1,0 +1,16 @@
+#TimSorrow
+
+# Gradle files
+.gralde/
+
+# User-specific files
+*.iml
+
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ethums.db
+Thumbs.db
