@@ -1,16 +1,27 @@
 #TimSorrow
 
 # Built application files
+<<<<<<< HEAD
+build/
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# External native build folder generated in Android Studio 2.2 and later
+.externalNativeBuild
+=======
 *.apk
 *.ap_
 *.aab
 
 # Local configuration file (sdk path, etc)
 local.properties
+>>>>>>> conflict
 
 # Gradle files
-.gralde/
+.gradle/
 
+<<<<<<< HEAD
 # Signing files
 .signing/
 
@@ -39,6 +50,21 @@ google-services.json
 
 # Version control
 vcs.xml
+=======
+# User-specific configurations
+*.iml
+
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Version control
+vcs.xml
 
 # lint
 lint/intermediates/
@@ -46,3 +72,4 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 lint/reports/Thumbs.db
+>>>>>>> conflict
