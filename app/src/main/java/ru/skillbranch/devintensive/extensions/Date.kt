@@ -1,139 +1,62 @@
 package ru.skillbranch.devintensive.extensions
 
-import ru.skillbranch.devintensive.utils.Utils
 import java.text.SimpleDateFormat
 import java.util.*
-
-const val SECOND = 1000L
-const val MINUTE = 60 * SECOND
-const val HOUR = 60 * MINUTE
-const val DAY = 24 * HOUR
-
-enum class TimeUnits {
-    SECOND,
-    MINUTE,
-    HOUR,
-    DAY;
-
-    fun plural(value: Int) : String {
-        val pluralForm = Utils.getPluralForm(value.toLong(), Utils.getPluralsForms(this))
-        return "$value $pluralForm"
-    }
-}
+import ru.skillbranch.devintensive.extensions.TimeUnits.*
 
 fun Date.format(pattern: String = "HH:mm:ss dd.MM.yy"): String {
     val dateFormat = SimpleDateFormat(pattern, Locale("ru"))
     return dateFormat.format(this)
 }
 
-fun Date.add(value: Int, units: TimeUnits = TimeUnits.SECOND): Date {
-    var time = this.time
-
-    time += when(units) {
-        TimeUnits.SECOND -> value * SECOND
-        TimeUnits.MINUTE -> value * MINUTE
-        TimeUnits.HOUR -> value * HOUR
-        TimeUnits.DAY -> value * DAY
-    }
-
-    this.time = time
-
+fun Date.add(value: Int, units: TimeUnits = SECOND): Date {
+    this.time = this.time + (units.value * value)
     return this
 }
+
 fun Date.humanizeDiff(date: Date = Date()): String {
-    val now = this.time
-    val then = date.time
+    var prefix = ""
+    var postfix = ""
 
-    val msDiff = now - then
+    var difference = date.time - this.time
 
-    val days = msDiff / DAY
-    val absDays = Math.abs(days)
+    if (difference < 0){
+        prefix = "через "
+        difference = -difference
+    } else {
+        postfix = " назад"
+    }
 
-    val hours = msDiff / HOUR
-    val absHours = Math.abs(hours)
+    return when(difference) {
+        in 0..1*SECOND.value -> "только что"
+        in 1*SECOND.value..45*SECOND.value -> "${prefix}несколько секунд$postfix"
+        in 45*SECOND.value..75*SECOND.value -> "${prefix}минуту$postfix"
+        in 75*SECOND.value..45*MINUTE.value -> "$prefix${MINUTE.plural(difference/MINUTE.value)}$postfix"
+        in 45*MINUTE.value..75*MINUTE.value -> "${prefix}час$postfix"
+        in 75*MINUTE.value..22*HOUR.value -> "$prefix${HOUR.plural(difference/HOUR.value)}$postfix"
+        in 22*HOUR.value..26*HOUR.value -> "${prefix}день$postfix"
+        in 26*HOUR.value..360*DAY.value -> "$prefix${DAY.plural(difference/DAY.value)}$postfix"
+        else -> if(date.time - this.time < 0) "более чем через год" else "более года назад"
+    }
+}
 
-    val minutes = msDiff / MINUTE
-    val absMinutes = Math.abs(minutes)
+enum class TimeUnits(val value: Long, private val ONE: String, private val FEW: String, private val MANY: String) {
 
-    val seconds = msDiff / SECOND
-    val absSeconds = Math.abs(seconds)
+    SECOND(1000L,"секунду", "секунды", "секунд"),
+    MINUTE(1000L*60L, "минуту", "минуты", "минут"),
+    HOUR(1000L*60L*60L, "час", "часа", "часов"),
+    DAY(1000L*60L*60L*24L, "день", "дня", "дней");
 
+    fun plural(num: Long) : String {
+        return "$num ${this.getAmount(num)}"
+    }
 
-    if (absDays > 360) {
-        return if (days > 0) {
-            "более чем через год" // более года
-        } else {
-            "более года назад"
+    private fun getAmount(num: Long) : String {
+        return when{
+            num in 5..20L -> MANY
+            num%10  == 1L  -> ONE
+            num%10 in 2..4L  -> FEW
+            else -> MANY
         }
     }
-
-    if (absHours > 26) {
-        val pluralForm = Utils.getPluralForm(absDays, Utils.getPluralsForms(TimeUnits.DAY))
-
-        return if (days > 0) {
-            "через $absDays $pluralForm" // N дней назад
-        } else {
-            "$absDays $pluralForm назад"
-        }
-    }
-
-    if (absHours in 23..26) {
-        return if (hours > 0) {
-            "через день"                // день назад
-        } else {
-            "день назад"
-        }
-    }
-
-
-    if (absMinutes > 75) {
-        val pluralForm = Utils.getPluralForm(absHours, Utils.getPluralsForms(TimeUnits.HOUR))
-
-        return if (hours > 0) {
-            "через $absHours $pluralForm" // N часов назад
-        } else {
-            "$absHours $pluralForm назад"
-        }
-    }
-
-
-    if (absMinutes in 46..75) {
-        return if (minutes > 0) {
-            "через час"                 // Час назад
-        } else {
-            "час назад"
-        }
-    }
-
-    if (absSeconds > 75) {
-        val pluralForm = Utils.getPluralForm(absMinutes, Utils.getPluralsForms(TimeUnits.MINUTE))
-
-        return if (minutes > 0) {
-            "через $absMinutes $pluralForm"
-        } else {
-            "$absMinutes $pluralForm назад"
-        }
-    }
-
-    if (absSeconds in 46..75) {
-        if (seconds > 0) {
-            return "через минуту"       // N минут назад
-        } else {
-            return "минуту назад"
-        }
-    }
-
-    if (absSeconds in 2..45) {
-        return if (seconds > 0) {
-            "через несколько секунд"    //  несколко секунд назад
-        } else {
-            "несколько секунд назад"
-        }
-    }
-
-    if (Math.abs(seconds) in 0..1) {    // только что
-        return "только что"
-    }
-
-    return ""
 }

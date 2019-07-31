@@ -1,1 +1,2 @@
-include ':app', ':app', ':app'
+rootProject.name='Dev-intensive'
+include ':app'

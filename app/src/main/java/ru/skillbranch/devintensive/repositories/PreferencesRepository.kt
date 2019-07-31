@@ -1,15 +1,14 @@
+
 package ru.skillbranch.devintensive.repositories
 
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatDelegate
 import ru.skillbranch.devintensive.App
 import ru.skillbranch.devintensive.models.Profile
 
 object PreferencesRepository {
 
-    private const val NICK_NAME = "NICK_NAME"
-    private const val RANK = "RANK"
     private const val FIRST_NAME = "FIRST_NAME"
     private const val LAST_NAME = "LAST_NAME"
     private const val ABOUT = "ABOUT"
@@ -27,10 +26,10 @@ object PreferencesRepository {
         putValue(APP_THEME to theme)
     }
 
-    fun getAppTheme() : Int = prefs.getInt(APP_THEME, AppCompatDelegate.MODE_NIGHT_NO)
+    fun getAppTheme(): Int = prefs.getInt(APP_THEME, AppCompatDelegate.MODE_NIGHT_NO)
 
     fun saveProfile(profile: Profile) {
-        with(profile){
+        with(profile) {
             putValue(FIRST_NAME to firstName)
             putValue(LAST_NAME to lastName)
             putValue(ABOUT to about)
@@ -53,17 +52,14 @@ object PreferencesRepository {
         val key = pair.first
         val value = pair.second
 
-        when(value)
-        {
+        when(value){
             is String -> putString(key, value)
-            is Int -> putInt(key, value)
             is Int -> putInt(key, value)
             is Boolean -> putBoolean(key, value)
             is Long -> putLong(key, value)
             is Float -> putFloat(key, value)
             else -> error("Only primitives types can be stored in Shared Preferences")
         }
-
         apply()
     }
 }
