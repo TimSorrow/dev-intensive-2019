@@ -1,4 +1,3 @@
-
 package ru.skillbranch.devintensive
 
 import android.app.Application
